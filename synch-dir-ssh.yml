@@ -1,0 +1,33 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Create user deploy1
+    user: name=deploy1 comment="The Deploy user" group=ubuntu shell=/bin/bash
+  - name: Create a 2048-bit SSH key for user jsmith in ~jsmith/.ssh/id_rsa
+    user:
+      name: deploy1
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+  - name: Creation of directory on remote server
+    file:
+       path: /home/deploy1/.ssh
+       state: directory
+       mode: 0644
+  - name: get file names to copy
+    command: "find /home/ubuntu/.ssh -type f"
+    register: files_to_copy
+  - name: copy files
+    copy:
+      src: "{{ item }}" 
+      dest: "/home/deploy1/.ssh"
+      owner: deploy1
+      group: ubuntu
+      remote_src: True
+      mode: 0644
+    with_items:
+      - "{{ files_to_copy.stdout_lines }}"
+  - name: remove user
+    command: "deluser --remove-home deploy1"

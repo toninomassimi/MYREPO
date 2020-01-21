@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+    - name: Content Update 
+      copy:  
+         dest: /tmp/resolve.conf
+         content: "Application server \n"

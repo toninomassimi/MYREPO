@@ -1,0 +1,11 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: yum list
+    command: "yum list installed | grep mongo"
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"

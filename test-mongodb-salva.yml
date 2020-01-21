@@ -1,0 +1,42 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+ 
+  - name: yum list
+    shell: "yum list installed mongo*"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: check mongo process
+    shell: "ps -ef | grep mongo"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+  - name: check mongo service status
+
+    shell: "systemctl status mongod.service"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: check mongo version
+    shell: "mongod --version"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: connect
+    shell: "mongo < show databases"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"

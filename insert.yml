@@ -1,0 +1,14 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: Insert
+    shell: "mongo {{database}} < {{jsfile}}"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"

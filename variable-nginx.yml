@@ -1,0 +1,18 @@
+upd: update
+inst: install
+unist: -y remove 
+dpkg: dpkg -l
+statu: systemctl status
+allow: 'Nginx Full'
+ufw-stat: ufw status
+pkg03: nginx
+start: systemctl start
+stop: systemctl stop
+restart: systemctl restart
+enable: systemctl enable
+disable: systemctl disable
+mkdir: mkdir -p /var/www/example.com
+cre-index: /var/www/example.com/index.html
+cre-conf: /var/www/example.com/index.html
+sym-lnks: ln -s /etc/nginx/sites-available/example.com.conf /etc/nginx/sites-enabled/example.com.conf
+test-conf: nginx -t

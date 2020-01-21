@@ -1,0 +1,87 @@
+# This playbook requires privilege escalation to be set. Please
+# refer the ansible.cfg in current working directory for privilege_escalation
+# configuration.
+
+- name: Deploy a web application
+  hosts: all 
+
+  tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #One day
+
+    - name: Install all required dependencies
+      become: true
+      #apt-get install -y python
+      apt:
+        name: "{{ item }}"
+        state: "installed"
+      with_items:
+        - python
+        - python-setuptools
+        - python-dev
+        - build-essential
+        - python-pip
+        - python-mysqldb
+
+    - name: Install MySQL database
+      become: true
+      #apt-get install -y
+      apt:
+        name: "{{ item }}"
+        state: "installed"
+      with_items:
+        - mysql-server
+        - mysql-client
+
+    - name: create MySQL configuration file
+      become: true
+      copy:
+        content: |
+          [client]
+          user=root
+          password="@targ8et"
+        dest: "/etc/.my.cnf"
+
+    - name: Start MySQL Service
+      become: true
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+#    - name: Create Application Database
+#      mysql_db:
+#        name: employee_db
+#        state: present
+#
+#    - name: Create Database User
+#      mysql_user:
+#        name: db_user
+#        password: Passw0rd
+#        priv: '*.*:ALL'
+#        state: present
+#        host: 'localhost'
+
+    - name: Install required Python flask libraries
+      become: true
+      pip:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - "flask"
+        - "flask-mysql"
+
+    - name: Copy source code
+      become: true
+      git:
+        repo: 'https://github.com/amitabhprasad/ansibleplaybook.git'
+        dest: /opt/
+        update: yes
+
+    - name: Start web server
+      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+      become: yes

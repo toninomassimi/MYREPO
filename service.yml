@@ -1,0 +1,5 @@
+---
+- hosts: all
+  tasks:
+    - name: Restart nginx process 
+      service:  name=nginx enabled=true state=started

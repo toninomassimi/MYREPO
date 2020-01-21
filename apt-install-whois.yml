@@ -1,0 +1,13 @@
+---
+- hosts: all
+  vars_files:
+    - variable-apt-v.yml
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: apt-get update
+    command: "apt-get {{upd}}"
+  - name: apt-get install pkg01 = whois
+    command: "apt-get {{inst}} {{pkg01}}"
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"

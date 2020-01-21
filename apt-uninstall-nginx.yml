@@ -1,0 +1,13 @@
+---
+- hosts: all
+  vars_files:
+    - variable-apt-v.yml
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: apt-get update
+    command: "apt-get {{upd}}"
+  - name: apt-get uninstall pkg03 = nginx
+    command: "apt-get {{unist}} {{pkg03}}"
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"

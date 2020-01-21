@@ -1,0 +1,8 @@
+upd: update
+inst: install
+unist: -y remove 
+dpkg: dpkg -l
+statu: systemctl status
+pkg01: whois
+pkg02: postgresql postgresql-contrib
+pkg03: nginx

@@ -1,0 +1,5 @@
+---
+- hosts: all
+  tasks:
+  - name: Create a file
+    file: path=/tmp/tonino.txt state=touch

@@ -1,0 +1,33 @@
+# update.yml 
+---
+- hosts: all
+  tasks:
+      - name: Update all packages on a Debian/Ubuntu
+        become: true
+        apt:
+            update_cache: yes
+            upgrade: dist
+      
+      - name: Reboot box if kernel/libs updated and requested by the system
+        become: true
+        shell: sleep 10 && /sbin/shutdown -r now 'Rebooting box to update system libs/kernel as needed' 
+        args:
+            removes: /var/run/reboot-required
+        async: 300
+        poll: 0
+        ignore_errors: true
+      
+      - name: Wait for system to become reachable again
+        become: true
+        wait_for_connection:
+            delay: 60
+            timeout: 300
+
+      - name: Verify new update (optional)
+        become: true
+        command: uname -mrs
+        register: uname_result
+      - name: Display new kernel version
+        become: true
+        debug:
+            var: uname_result.stdout_lines

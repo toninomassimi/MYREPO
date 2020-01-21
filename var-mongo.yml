@@ -1,0 +1,10 @@
+database: mydb
+jsfile: /root/myfile.js 
+insert: db.myCollection.insert() 
+chksize: db.stats().dataSize
+backup: mongodump
+bkppath: ~/backups/my_backup_000
+dropdb: db.dropDatabase()
+restore: mongorestore
+find: db.myCollection.find()
+showdb: show databases

@@ -1,0 +1,138 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: create show databases js
+    copy:
+       dest: /root/showdatabases.js
+       content: "show databases"
+ 
+  - name: execute show database cmd
+    shell: "mongo < showdatabases.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: create check size js
+    copy:
+       dest: /root/checksize.js
+       content: "db.stats().dataSize"
+
+  - name: check db size
+    shell: "mongo mydb < checksize.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+
+  - name: Populate 1
+    copy:
+       dest: /root/populate1.js
+       content: "db.myCollection.insert([{'name': 'Alice', 'age': 30},{'name': 'Bill', 'age': 25},{'name': 'Bob', 'age': 35}])"
+
+  - name: Populate 1
+    shell: "mongo mydb < populate1.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: create check size js
+    copy:
+       dest: /root/checksize.js
+       content: "db.stats().dataSize"
+
+  - name: check db size later populate1
+    shell: "mongo mydb < checksize.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: Backup1
+    shell: "mongodump -d mydb -o ~/backups/first_backup"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: Populate 2
+    copy:
+       dest: /root/populate2.js
+       content: "db.myCollection1.insert([{'name': 'Pippo', 'age': 70},{'name': 'Pluto', 'age': 75},{'name': 'Paperino', 'age': 85}])"
+
+  - name: Populate 2
+    shell: "mongo mydb < populate2.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: create check size js
+    copy:
+       dest: /root/checksize.js
+       content: "db.stats().dataSize"
+
+  - name: Check size
+    shell: "mongo mydb < checksize.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: Backup2
+    shell: "mongodump -d mydb -o ~/backups/second_backup"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: create drop database js
+    copy:
+       dest: /root/dropdatabase.js
+       content: "db.dropDatabase()"
+
+  - name: Drop database
+    shell: "mongo mydb < dropdatabase.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: create check size js
+    copy:
+       dest: /root/checksize.js
+       content: "db.stats().dataSize"
+
+  - name: Check size
+    shell: "mongo mydb < checksize.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: Restore at first backup
+    shell: "mongorestore ~/backups/first_backup/"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+
+  - name: create check size js
+    copy:
+       dest: /root/checksize.js
+       content: "db.stats().dataSize"
+
+  - name: Check size
+    shell: "mongo mydb < checksize.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+

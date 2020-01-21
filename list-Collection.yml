@@ -1,0 +1,20 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: create find js
+    copy:
+       dest: "{{jsfile}}"
+       content: "{{find}}"
+
+  - name: List Collection
+    shell: "mongo {{database}} < {{jsfile}}"
+    register: result
+  
+  - name: Print result dict
+    debug:
+      var: result

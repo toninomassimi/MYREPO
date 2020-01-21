@@ -1,0 +1,20 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: create show databases js
+    copy:
+       dest: "{{jsfile}}"
+       content: "{{showdb}}"
+
+  - name: execute show database cmd
+    shell: "mongo < {{jsfile}}"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
+

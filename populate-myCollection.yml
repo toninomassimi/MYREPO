@@ -1,0 +1,12 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: Populate myCollection
+    copy:
+       dest: "{{jsfile}}"
+       content: "db.myCollection.insert([{'name': 'Alice', 'age': 80},{'name': 'Bill', 'age': 85},{'name': 'Bob', 'age': 90}])"

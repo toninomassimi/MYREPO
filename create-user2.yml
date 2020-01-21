@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Create user deploy
+    user: name=deploy comment="The Deploy user" group=admin shell=/bin/bash
+  - name: Create a 2048-bit SSH key for user jsmith in ~jsmith/.ssh/id_rsa
+    user:
+      name: deploy
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+  - name: list the files in the folder
+      command: mkdir /home/deploy1/.ssh
+      command: cp /home/ubuntu/.ssh /home/deploy1/.ssh 
+  - name: Copy ubuntu for deploy user
+    synchronize:
+      mode: pull
+      src: "/home/ubuntu/.ssh"
+      dest: "/home/deploy/.ssh"

@@ -1,0 +1,19 @@
+---
+- hosts: all
+  vars_files:
+    - var-mongo.yml
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: create dropdatabases js
+    copy:
+       dest: "{{jsfile}}"
+       content: "{{dropdb}}"
+
+  - name: Drop 
+    shell: "mongo {{database}} < dropdatabase.js"
+    args:
+      warn: false # set warn=false to prevent warning
+    register: command_output
+  - debug: msg="{{command_output.stdout}}"
